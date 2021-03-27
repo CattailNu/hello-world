@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+
+	<meta charset="UTF-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="keywords" content="hello world, code, javascript" />
+	<meta name="description" content="A simple Hello World in JavaScript, with recursion, bitwise math, images, included APIs, and starring HTML Canvas and simple CSS." />
+ 	<meta name="Author" content="T. L. Ford" />
+	<meta name="robots" content="index, follow" />
+	<link rel="shortcut icon" href="http://www.cattail.nu/favicon.gif" type="image/gif" />
+	<title>Simple Hello World</title>
+
+	<link rel="stylesheet" href="http://cattail.nu/journal_tools/book/books.css" type="text/css" />
+
+	<style type="text/css">
+	<!--
+		* { box-sixing: border-box; }
+
+		body {
+			background-color: #dddddd;
+		}
+
+		#bodyDiv {
+			margin:30px;
+			padding: 20px;
+			background-color: #ffffff66;
+			border-radius: 10px;
+		}
+	
+		a {
+			color:#0ba1ab;
+		}
+		a:hover {
+			color:#2fc590;
+		}
+		div.divControl {
+			margin: 30px;
+			padding: 15px;
+			background-color: white;
+		}
+		canvas {
+			border:black 1px solid;
+		}
+	-->
+	</style>
+
+
+	<script type="text/javascript">
+
+		let maxWidthHeight = 400; // 4:3
+
+		function toggleVisibility(ctlName) {
+			let ctl = document.getElementById(ctlName);
+			if (ctl.style.display === "none") {
+				ctl.style.display = "block";
+				ctl.style.visibility = "visible";
+			} else {
+				ctl.style.display = "none";
+				ctl.style.visibility = "hidden";
+			}
+		}
+	</script>
+
+	<script type="text/javascript">
+    function drawRotated(degrees){
+			var cvs = document.getElementById("cvs");
+      var ctx = cvs.getContext("2d");
+
+			let imgData = cvs.toDataURL("image/jpeg",1.0); // 0-1 image quality
+			let img = new Image();
+			img.id = "img";
+			img.onload = function(){
+				var cvs = document.getElementById("cvs");
+        var ctx = cvs.getContext("2d");
+
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+
+				// this clears the canvas also
+				let tmp = cvs.width;
+		    cvs.width = cvs.height;
+		    cvs.height = tmp;
+
+        ctx.save(); // saves the current translate/rotate
+
+        ctx.translate(cvs.width/2,cvs.height/2); // origin to center, applies to new objects
+        ctx.rotate(degrees*Math.PI/180); // applies to new objects
+        ctx.drawImage(img,-img.width/2,-img.height/2);
+	
+				ctx.restore(); // retores the saved translate/rotate
+			};
+
+			img.src = imgData;
+    }
+
+		var str = "";
+	
+		function rotateCCW(){drawRotated(270);}
+		function rotateCW(){drawRotated(90);}
+		function rotateDone(){
+			toggleVisibility('controlsRotate');	
+			(function(next) {
+				buildStr([137,108,101,101,98,177,90,98,95,101,109]);
+			  next();
+			}(function() {
+				words(str);
+			}));
+		}
+
+		function endGame() {
+			var cvs = document.getElementById("cvs");
+	    var ctx = cvs.getContext("2d");
+      let imgData = cvs.toDataURL("image/jpeg",0.75); // Assigns image base64 string in jpeg format to a variable
+			document.getElementById("imageOutID").src = imgData;
+			toggleVisibility('controlsCanvas');
+			toggleVisibility('imageOut');
+			toggleVisibility('books');
+		}
+	
+		function buildStr(decIn) {
+			if (decIn.length < 1) { return; }
+			str += String.fromCharCode(((~(decIn[0] - 200))+10));
+			decIn.shift();
+			buildStr(decIn);
+		}
+	
+		function words(str) {
+			var cvs = document.getElementById("cvs");
+	    var ctx = cvs.getContext("2d");
+	
+			ctx.fillStyle = "#FFFFFFCC";
+			ctx.fillRect(10, 10, 260, 58);
+	
+			ctx.fillStyle = "#000000";
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap';
+			document.getElementsByTagName('head')[0].appendChild(link);
+			
+			var image = new Image;
+			image.src = link.href;
+			image.onerror = function() {
+		    ctx.font = '50px "Vast Shadow"';
+		    ctx.textBaseline = 'top';
+		    ctx.fillText(str, 20, 10);
+				endGame();
+			};
+		}
+	</script>
+
+</head>
+
+<body>
+<div id="bodyDiv">
+<h3>Simple Hello World</h3>
+<p>In JavaScript, with recursion, bitwise math, images, included APIs, and starring HTML Canvas and simple CSS.</p>
+<p>View Source to see code.</p>
+
+<div id="controlsFile" class="divControl">
+		<p>Select an image:</p>
+    <input type="file" id="imageInput" accept = "image/*">
+</div>
+
+<div id="controlsRotate" style="visibility:hidden;display:none;" class="divControl">
+    <button onclick="rotateCCW()">Rotate Counterclockwise</button>
+    <button onclick="rotateCW()">Rotate Clockwise</button>
+    <button onclick="rotateDone()">It's Good</button>
+</div>
+
+<div id="controlsCanvas" style="visibility:hidden;display:none;">
+    <canvas id= "cvs" width="600" height="400"></canvas>
+</div>
+
+<div id="imageOut" style="visibility:hidden;display:none;">
+	<img src="" id="imageOutID" />
+</div>
+
+</div><!-- bodyDiv -->
+
+<div id="books" style="visibility:hidden;display:none;"></div>
+<script type="text/javascript" src="http://cattail.nu/journal_tools/book/books.js"></script>
+
+
+<script>
+  let imgInput = document.getElementById('imageInput');
+  imgInput.addEventListener('change', function(e) {
+    if(e.target.files) {
+      let imageFile = e.target.files[0]; // get image file
+      var reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      reader.onloadend = function (e) {
+        var myImage = new Image(); 
+        myImage.src = e.target.result; // Assigns converted image to image object
+        myImage.onload = function(ev) {
+          var cvs = document.getElementById("cvs");
+          var ctx = cvs.getContext("2d");
+
+					var ratio = myImage.width / myImage.height;
+					cvs.height = maxWidthHeight;
+					cvs.width = Math.floor(maxWidthHeight * ratio);
+
+					// landscape
+					if (myImage.height < myImage.width) {
+						ratio = myImage.height / myImage.width;
+						// cvs.height = maxWidthHeight;
+						cvs.width = Math.floor(maxWidthHeight * ratio);
+						// this clears the canvas also
+						let tmp = cvs.width;
+				    cvs.width = cvs.height;
+				    cvs.height = tmp;
+					}
+
+					if (cvs.width < maxWidthHeight) {
+						ratio = myImage.height / myImage.width;
+						cvs.width = maxWidthHeight;
+						cvs.height = Math.floor(maxWidthHeight * ratio);
+					}
+
+          ctx.drawImage(myImage,0,0,Math.floor((cvs.width * myImage.width) / 
+						myImage.width),Math.floor((cvs.height * myImage.height) / myImage.height)); // Draws the image on canvas
+          let imgData = cvs.toDataURL("image/jpeg",0.75); // Assigns image base64 string in jpeg format to a variable
+
+					toggleVisibility('controlsFile');
+					toggleVisibility('controlsCanvas');
+					toggleVisibility('controlsRotate');
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+
+</html>
